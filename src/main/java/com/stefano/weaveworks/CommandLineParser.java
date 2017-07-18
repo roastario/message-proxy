@@ -1,3 +1,5 @@
+package com.stefano.weaveworks;
+
 import org.apache.commons.cli.*;
 
 /**
@@ -45,7 +47,6 @@ public class CommandLineParser {
             Integer forwardPort = (Integer.parseInt(cmd.getOptionValue("forwardPort")));
             return new CommandLineParser(forwardAddress, listenAddress, forwardPort, listenPort);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             formatter.printHelp("./proxy", options);
             return null;
         }
