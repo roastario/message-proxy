@@ -1,4 +1,4 @@
-# Weaveworks Backend Challenge
+# Sewworks Backend Challenge
 
 ## Design 
 
@@ -27,8 +27,8 @@
 
 ### Input
 Using Java's NIO2 AsynchronousSocketChannel it is possible to do async read and writes to a socket. 
-This allows large numbers of clients to be handled by a single thread. Originally my implementation used a thread per socket (See: com.stefano.weaveworks.pipe.InputReader)
-but this was struggling to handle many clients, and the async version was created (com.stefano.weaveworks.pipe.AsyncInputReader). 
+This allows large numbers of clients to be handled by a single thread. Originally my implementation used a thread per socket (See: com.stefano.sewworks.pipe.InputReader)
+but this was struggling to handle many clients, and the async version was created (com.stefano.sewworks.pipe.AsyncInputReader). 
 This continuously receives callbacks from the underlying NIO2 channel whenever data has been read. This data then undergoes the following:
 
 1. The new data is converted into UTF-8 characters. 
@@ -39,7 +39,7 @@ This continuously receives callbacks from the underlying NIO2 channel whenever d
 6. The original data is checked for another delimiter and the process repeats until all the data is searched
 
 ### Stats Collection
-As each message is processed by the input source, it is passed to an instance of com.stefano.weaveworks.stats.StatsCollector. 
+As each message is processed by the input source, it is passed to an instance of com.stefano.sewworks.stats.StatsCollector. 
 This is responsible for collecting the various stats required. To satisfy the Rate/Window requirement, the following is done
 
 1. As messages are recieved, they are added to the tail of a Deque.
@@ -54,7 +54,7 @@ As the messages will arrive in time order, this approach should be efficient. Th
  
 ### Stats Printing
 When a SIGUSR2 message is recieved, the signal handler interacts with the StatsCollector to place a task onto the queue.
-This task delegates to com.stefano.weaveworks.stats.StatsJSONifier. Internally this builds a PoJo with the required fields and then uses GSON to print JSON to the console.
+This task delegates to com.stefano.sewworks.stats.StatsJSONifier. Internally this builds a PoJo with the required fields and then uses GSON to print JSON to the console.
 Again, this is done Asynchronously to simplify the treadsafety and "correctness" of the printed out information. 
 
 ## How To Run
@@ -71,13 +71,13 @@ There are several unit tests in the folder: src/test/java. Coverage was measured
 
 ## Core Classes
 
-1. com.stefano.weaveworks.pipe.AsyncInputReader - Responsible for generating events from network data
-2. com.stefano.weaveworks.pipe.AsyncMessageWriter - Responsible for writing parsed messages onto another network connection
-3. com.stefano.weaveworks.pipe.AsyncUtils - Wraps the raw AsynchronousSocketChannel with nicer callback-style functionality
-4. com.stefano.weaveworks.pipe.ListenableMessagePipe - Wires together the input and output channels, and intercepts messages for stat collection
-5. com.stefano.weaveworks.stats.StatsCollector - Collects the various metrics required
-6. com.stefano.weaveworks.stats.StatsJSONifier - Formats the stats for output to stdout
-7. com.stefano.weaveworks.Main - Starts the server, prints out information about the process and registers the SIGUSR2 handler. 
+1. com.stefano.sewworks.pipe.AsyncInputReader - Responsible for generating events from network data
+2. com.stefano.sewworks.pipe.AsyncMessageWriter - Responsible for writing parsed messages onto another network connection
+3. com.stefano.sewworks.pipe.AsyncUtils - Wraps the raw AsynchronousSocketChannel with nicer callback-style functionality
+4. com.stefano.sewworks.pipe.ListenableMessagePipe - Wires together the input and output channels, and intercepts messages for stat collection
+5. com.stefano.sewworks.stats.StatsCollector - Collects the various metrics required
+6. com.stefano.sewworks.stats.StatsJSONifier - Formats the stats for output to stdout
+7. com.stefano.sewworks.Main - Starts the server, prints out information about the process and registers the SIGUSR2 handler. 
 
 ## Dependencies
 1. org.apache.commons.cli - Java does not have any command line argument parsing built in. 

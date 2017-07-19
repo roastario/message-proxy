@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.stefano</groupId>
-    <artifactId>weaveworks</artifactId>
+    <artifactId>sewworks</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -58,7 +58,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.stefano.weaveworks.Main</mainClass>
+                    <mainClass>com.stefano.sewworks.Main</mainClass>
                     <arguments>
                         <argument>-forwardAddress</argument>
                         <argument>localhost</argument>
