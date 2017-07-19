@@ -46,7 +46,6 @@ public class AsyncInputReader<T> {
                 try {
                     String newData = new String(readBuffer.array(), 0, bytesRead);
                     messageData.append(newData);
-                    readBuffer.clear();
                     consumeMessageData();
                 } catch (Throwable t) {
                     errorListener.onError(t);
@@ -61,8 +60,8 @@ public class AsyncInputReader<T> {
     }
 
     private void consumeMessageData() {
-        int indexOfDelimiter = messageData.indexOf(messageDelimiter);
-        if (indexOfDelimiter != -1) {
+        int indexOfDelimiter;
+        while ((indexOfDelimiter = messageData.indexOf(messageDelimiter)) != -1) {
             String toConvert = messageData.substring(0, indexOfDelimiter);
             convertMessageAndInvokeListeners(deserialiser, messageListeners, errorListener, toConvert);
             resetMessageBuffer(messageData, indexOfDelimiter);

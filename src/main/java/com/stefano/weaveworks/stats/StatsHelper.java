@@ -1,7 +1,7 @@
 package com.stefano.weaveworks.stats;
 
 import java.util.Collection;
-import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import com.stefano.weaveworks.Message;
@@ -17,7 +17,7 @@ public class StatsHelper {
         return messagesWithinWindow / (double) secondsAllowed;
     }
 
-    public static PriorityQueue<Message> trimListToWindowSize(long millisToAllow, long startTime, PriorityQueue<Message> queue) {
+    public static Queue<Message> trimListToWindowSize(long millisToAllow, long startTime, Queue<Message> queue) {
         while (!queue.isEmpty() && ((startTime - queue.peek().getTimeStamp()) > millisToAllow)) {
             queue.poll();
         }

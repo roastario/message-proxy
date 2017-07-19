@@ -1,10 +1,10 @@
 package com.stefano.weaveworks;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.ExecutionException;
 
-import sun.misc.Signal;
-
+import com.stefano.weaveworks.signals.PosixSignalsHandling;
 import com.stefano.weaveworks.stats.StatsCollector;
 
 /**
@@ -17,14 +17,36 @@ public class Main {
         if (commandLine == null) {
             System.exit(1);
         }
+        printInfoToStdErr(commandLine);
         ProxyServer server = new ProxyServer(commandLine.getListenAddress(),
                 commandLine.getListenPort(),
                 commandLine.getForwardAddress(),
-                commandLine.getForwardPort(), new StatsCollector()
+                commandLine.getForwardPort(),
+                new StatsCollector()
         );
-        Signal signal = new Signal("USR2");
-        Signal.handle(signal, recievedSignal -> server.dumpToOutput());
+        PosixSignalsHandling.registerHandler("USR2", (signal) -> server.dumpToOutput());
         server.startAndWait();
+    }
+
+    private static void printInfoToStdErr(CommandLineParser commandLine) {
+        System.err.println("Starting proxy server "
+                + commandLine.getListenAddress()
+                + ":"
+                + commandLine.getListenPort()
+                + " -> "
+                + commandLine.getForwardAddress()
+                + ":"
+                + commandLine.getForwardPort()
+                + " send SIGUSR2 signal to pid: " + attemptToGetPid());
+    }
+
+    private static String attemptToGetPid() {
+        try {
+            String id = ManagementFactory.getRuntimeMXBean().getName();
+            return id.split("@")[0];
+        } catch (RuntimeException e) {
+            return "UNKNOWN PID";
+        }
     }
 
 

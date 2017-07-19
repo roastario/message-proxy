@@ -32,14 +32,21 @@ public class ProxyServer {
 
 
     public void startAndWait() throws ExecutionException, InterruptedException, IOException {
-        final AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open(AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool()))
+        final AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open(
+                AsynchronousChannelGroup.withThreadPool(Executors.newCachedThreadPool()))
                 .bind(new InetSocketAddress(listenAddress, listenPort));
 
         while (true) {
             AsynchronousSocketChannel socket = server.accept().get();
-            ListenableMessagePipe clientMultiplexor = new ListenableMessagePipe(socket, forwardAddress, forwardPort, statsCollector, "\n");
+            System.err.println("connection from: " + socket.getRemoteAddress().toString());
+            ListenableMessagePipe clientMultiplexor = new ListenableMessagePipe(socket,
+                    forwardAddress,
+                    forwardPort,
+                    statsCollector,
+                    "\n");
             clientMultiplexor.startPipe();
         }
+
     }
 
     public void dumpToOutput() {

@@ -13,7 +13,7 @@ import org.junit.Test;
  */
 public class MessageTest {
 
-    @Test
+    @Test(timeout = 2000L)
     public void comparatorShouldSortOldestMessageFirst() throws Exception {
 
         Message message1 = new Message(null, null, 1, null, 1001);

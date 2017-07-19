@@ -1,6 +1,11 @@
 package com.stefano.weaveworks;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Created by stefano
@@ -42,11 +47,11 @@ public class CommandLineParser {
         try {
             cmd = parser.parse(options, args);
             String forwardAddress = cmd.getOptionValue("forwardAddress");
-            String listenAddress = cmd.getOptionValue("listenAddress", "localhost");
+            String listenAddress = cmd.getOptionValue("listenAddress", "0.0.0.0");
             Integer listenPort = Integer.parseInt(cmd.getOptionValue("listenPort"));
             Integer forwardPort = (Integer.parseInt(cmd.getOptionValue("forwardPort")));
             return new CommandLineParser(forwardAddress, listenAddress, forwardPort, listenPort);
-        } catch (Exception e) {
+        } catch (RuntimeException | ParseException e) {
             formatter.printHelp("./proxy", options);
             return null;
         }

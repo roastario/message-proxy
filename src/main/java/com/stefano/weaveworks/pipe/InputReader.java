@@ -14,6 +14,7 @@ import com.stefano.weaveworks.pipe.listeners.ConnectionErrorListener;
  */
 public class InputReader<T> implements Runnable {
 
+    public static final Charset CHARSET = Charset.forName("UTF-8");
     private final InputStream toReadFrom;
     private final String messageDelimiter;
     private final Function<String, T> deserialiser;
@@ -41,7 +42,7 @@ public class InputReader<T> implements Runnable {
         int bytesRead = 0;
         try {
             while ((bytesRead = toReadFrom.read(buffer)) != -1) {
-                currentMessage.append(new String(buffer, 0, bytesRead, Charset.forName("UTF-8")));
+                currentMessage.append(new String(buffer, 0, bytesRead, CHARSET));
                 currentMessage = consumeData(messageDelimiter, deserialiser, messageListeners, errorListener, currentMessage);
             }
         } catch (Throwable t) {

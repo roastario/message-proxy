@@ -35,8 +35,8 @@ public class ListenableMessagePipe {
 
     public void startPipe() {
         AsyncUtils.asyncConnect(forwardAddress, forwardPort).thenAccept(serverConnection -> {
-            PipingMessageConsumer clientConsumer = new PipingMessageConsumer(serverConnection, delimiter, new WriteErrorHandler(statsCollector, serverConnection, clientConnection));
-            PipingMessageConsumer serverConsumer = new PipingMessageConsumer(clientConnection, delimiter, new WriteErrorHandler(statsCollector, clientConnection, serverConnection));
+            AsyncMessageWriter clientConsumer = new AsyncMessageWriter(serverConnection, delimiter, new WriteErrorHandler(statsCollector, serverConnection, clientConnection));
+            AsyncMessageWriter serverConsumer = new AsyncMessageWriter(clientConnection, delimiter, new WriteErrorHandler(statsCollector, clientConnection, serverConnection));
             ConnectionEndedListener clientDisconnectListner = new DisconnectionHandler(clientConnection, serverConsumer);
             ConnectionEndedListener serverDisconnectListner = new DisconnectionHandler(serverConnection, clientConsumer);
             AsyncInputReader<Message> clientInputReader = new AsyncInputReader<>(clientConnection, delimiter, Message::fromString, asList(statsCollector, clientConsumer), statsCollector, clientDisconnectListner);
@@ -65,7 +65,7 @@ public class ListenableMessagePipe {
         public void accept(Throwable throwable) {
             statsCollector.onError(throwable);
             try {
-                System.out.println(channelToCloseDueToError.getRemoteAddress() + " has been disconnected due to proxy error");
+                System.err.println(channelToCloseDueToError.getRemoteAddress() + " has been disconnected due to proxy error");
                 channelToCloseDueToError.close();
             } catch (IOException e) {
             }
@@ -75,9 +75,9 @@ public class ListenableMessagePipe {
     private static class DisconnectionHandler implements ConnectionEndedListener {
 
         private final AsynchronousSocketChannel channelDisconnected;
-        private final PipingMessageConsumer channelToDisconnect;
+        private final AsyncMessageWriter channelToDisconnect;
 
-        private DisconnectionHandler(AsynchronousSocketChannel channelDisconnected, PipingMessageConsumer channelToDisconnect) {
+        private DisconnectionHandler(AsynchronousSocketChannel channelDisconnected, AsyncMessageWriter channelToDisconnect) {
             this.channelDisconnected = channelDisconnected;
             this.channelToDisconnect = channelToDisconnect;
         }
@@ -85,7 +85,7 @@ public class ListenableMessagePipe {
         @Override
         public void connectionComplete() {
             try {
-                System.out.println(channelDisconnected.getRemoteAddress().toString() + " has disconnected ");
+                System.err.println(channelDisconnected.getRemoteAddress().toString() + " has disconnected ");
                 channelToDisconnect.closeConnection();
             } catch (IOException e) {
             }

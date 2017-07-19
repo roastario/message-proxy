@@ -16,9 +16,9 @@ import com.stefano.weaveworks.Message;
  */
 public class StatsHelperTest {
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldTrimQueueToCorrectSizeIfSorted() throws Exception {
-        PriorityQueue<Message> queue = new PriorityQueue<>(Message.oldestMessageFirst());
+        LinkedList<Message> queue = new LinkedList<>();
         queue.add(new Message("REQ 1 Hey", Message.MessageType.REQ, 1, "Hey", 1000));
         queue.add(new Message("REQ 2 Hey", Message.MessageType.REQ, 2, "Hey", 1999));
         queue.add(new Message("REQ 3 Hey", Message.MessageType.REQ, 3, "Hey", 3000));
@@ -35,7 +35,7 @@ public class StatsHelperTest {
         ));
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldTrimQueueToCorrectSizeIfOutOfOrder() throws Exception {
         PriorityQueue<Message> queue = new PriorityQueue<>(Message.oldestMessageFirst());
         queue.add(new Message("REQ 2 Hey", Message.MessageType.REQ, 2, "Hey", 1999));
@@ -54,7 +54,7 @@ public class StatsHelperTest {
         ));
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldCalculateMessagesPerSecondForSortedWindow() throws Exception {
 
         LinkedList<Message> queue = new LinkedList<>();

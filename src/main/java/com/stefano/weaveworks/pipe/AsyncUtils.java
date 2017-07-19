@@ -33,6 +33,7 @@ public class AsyncUtils {
                     attachment.clear();
                 }
             }
+
             @Override
             public void failed(Throwable exc, ByteBuffer attachment) {
                 onError.accept(exc);
@@ -61,15 +62,25 @@ public class AsyncUtils {
         return toReturn;
     }
 
+
     public static void asyncWrite(AsynchronousSocketChannel toWriteTo, ByteBuffer buffer, Consumer<Throwable> onError) {
+        asyncWrite(toWriteTo, buffer, onError, () -> {
+        });
+    }
+
+    public static void asyncWrite(AsynchronousSocketChannel toWriteTo,
+                                  ByteBuffer buffer,
+                                  Consumer<Throwable> onError,
+                                  Runnable onComplete) {
         toWriteTo.write(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
             @Override
             public void completed(Integer result, ByteBuffer attachment) {
                 if (attachment.hasRemaining()) {
                     toWriteTo.write(attachment, attachment, this);
+                } else {
+                    onComplete.run();
                 }
             }
-
             @Override
             public void failed(Throwable exc, ByteBuffer attachment) {
                 onError.accept(exc);

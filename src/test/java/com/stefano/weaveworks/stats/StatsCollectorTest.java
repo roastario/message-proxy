@@ -23,7 +23,7 @@ import com.stefano.weaveworks.Message;
 public class StatsCollectorTest {
 
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldTrackNumberOfVariousMessages() throws Exception {
         LinkedList<Message> queue = new LinkedList<>();
         queue.add(new Message("REQ 1 Hey", Message.MessageType.REQ, 1, "Hey", 1000));
@@ -43,7 +43,7 @@ public class StatsCollectorTest {
         Assert.assertThat(statsCollector.getRequestTotal(), is(equalTo(3L)));
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldTrackRateOfMessagesWithinGivenWindow() throws Exception {
         LinkedList<Message> queue = new LinkedList<>();
         queue.add(new Message("REQ 1 Hey", Message.MessageType.REQ, 1, "Hey", 1000));
@@ -68,7 +68,7 @@ public class StatsCollectorTest {
         Assert.assertThat(responseRateWithinFiveSeconds, is(2 / 4d));
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldDumpToOutputWhenRequested() throws Exception {
 
         LinkedList<Message> queue = new LinkedList<>();

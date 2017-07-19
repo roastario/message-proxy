@@ -15,7 +15,7 @@ import org.junit.Test;
 public class StatsJSONifierTest {
 
 
-    @Test
+    @Test(timeout = 2000L)
     public void shouldJsonifyWithSpecifiedNames() throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream writer = new PrintStream(outputStream);

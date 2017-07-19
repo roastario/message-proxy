@@ -11,12 +11,13 @@ import com.stefano.weaveworks.Message;
 /**
  * Author stefanofranz
  */
-public class PipingMessageConsumer implements Consumer<Message> {
+public class AsyncMessageWriter implements Consumer<Message> {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
     private final AsynchronousSocketChannel toWriteTo;
     private final String delimiter;
     private final Consumer<Throwable> onWriteError;
 
-    public PipingMessageConsumer(AsynchronousSocketChannel toWriteTo, String delimiter, Consumer<Throwable> errorConsumer) {
+    public AsyncMessageWriter(AsynchronousSocketChannel toWriteTo, String delimiter, Consumer<Throwable> errorConsumer) {
         this.toWriteTo = toWriteTo;
         this.delimiter = delimiter;
         this.onWriteError = errorConsumer;
@@ -25,7 +26,7 @@ public class PipingMessageConsumer implements Consumer<Message> {
     @Override
     public void accept(Message message) {
         String toSend = message.getBackingData() + delimiter;
-        ByteBuffer toWrite = ByteBuffer.wrap(toSend.getBytes(Charset.forName("UTF-8")));
+        ByteBuffer toWrite = ByteBuffer.wrap(toSend.getBytes(CHARSET));
         AsyncUtils.asyncWrite(toWriteTo, toWrite, onWriteError);
     }
 
