@@ -66,5 +66,23 @@ mvn clean install exec:java
 
 This will trigger a full build, unit test and start the proxy server, printing out PID and Port information to stderr. 
 
+## Testing
+There are several unit tests in the folder: src/test/java. Coverage was measured using JaCoCo. 
+
+## Core Classes
+
+1. com.stefano.weaveworks.pipe.AsyncInputReader - Responsible for generating events from network data
+2. com.stefano.weaveworks.pipe.AsyncMessageWriter - Responsible for writing parsed messages onto another network connection
+3. com.stefano.weaveworks.pipe.AsyncUtils - Wraps the raw AsynchronousSocketChannel with nicer callback-style functionality
+4. com.stefano.weaveworks.pipe.ListenableMessagePipe - Wires together the input and output channels, and intercepts messages for stat collection
+5. com.stefano.weaveworks.stats.StatsCollector - Collects the various metrics required
+6. com.stefano.weaveworks.stats.StatsJSONifier - Formats the stats for output to stdout
+7. com.stefano.weaveworks.Main - Starts the server, prints out information about the process and registers the SIGUSR2 handler. 
+
+## Dependencies
+1. org.apache.commons.cli - Java does not have any command line argument parsing built in. 
+2. com.google.gson - This is used for JSON pretty formatting, again java has no JSON processing available
+3. JUnit+Hamcrest - These are the standard java testing libraries. Only used in tests
+
 
  
